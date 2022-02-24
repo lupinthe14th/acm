@@ -1,0 +1,38 @@
+---
+services:
+  broker:
+    image: emqx/emqx:latest
+    environment:
+      EMQX_LOG__LEVEL: debug
+    ports:
+      - 18083:18083
+      - 1883:1883
+      - 8883:8883
+      - 8081:8081
+  pub:
+    build:
+      context: ./
+      dockerfile: ./publisher/Dockerfile
+      x-bake:
+        platforms:
+          - linux/arm64/v8
+          - linux/arm/v7
+          - linux/arm/v6
+        cache-from: type=registry,ref=lupinthe14th/acm-publisher:cache
+        cache-to: type=registry,ref=lupinthe14th/acm-publisher:cache,mode=max
+        tags:
+          - lupinthe14th/acm-publisher:latest
+          - lupinthe14th/acm-publisher:${VERSION}
+    image: lupinthe14th/acm-publisher:latest
+    restart: always
+    network_mode: "host"
+    environment:
+      acm_serverURL: tcp://mqtt-broker.localdomain:1883
+      acm_clientID: mqtt_publisher
+      acm_topic: "sensors/mqtt_publisher"
+      acm_qos: 1
+      acm_keepAlive: 30
+      acm_connectRetryDelay: 10000
+      acm_delayBetweenMessages: 10000
+      acm_printMessages: "true"
+      acm_debug: "true"
