@@ -15,6 +15,8 @@ import (
 const (
 	envServerURL = "acm_serverURL" // server URL
 	envClientID  = "acm_clientID"  // client id to connect with
+	envUsername  = "acm_username"  // username to connect with
+	envPassword  = "acm_password"  // password to connect with
 	envTopic     = "acm_topic"     // topic to publish on
 	envQos       = "acm_qos"       // qos to utilise when publishing
 
@@ -30,6 +32,8 @@ const (
 type config struct {
 	serverURL *url.URL // MQTT server URL
 	clientID  string   // Client ID to use when connecting to server
+	username  string   // Username to use when connecting to server
+	password  string   // Password to use when connecting to server
 	topic     string   // Topic to subscribe to
 	qos       byte     // QOS to use when subscribing
 
@@ -55,6 +59,12 @@ func getConfig() (config, error) {
 	}
 
 	if cfg.clientID, err = stringFromEnv(envClientID); err != nil {
+		return config{}, err
+	}
+	if cfg.username, err = stringFromEnv(envUsername); err != nil {
+		return config{}, err
+	}
+	if cfg.password, err = stringFromEnv(envPassword); err != nil {
 		return config{}, err
 	}
 	if cfg.topic, err = stringFromEnv(envTopic); err != nil {

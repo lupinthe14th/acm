@@ -12,6 +12,8 @@ func TestGetConfig(t *testing.T) {
 		name                 string
 		serverURL            string
 		clientID             string
+		username             string
+		password             string
 		topic                string
 		qos                  string
 		keepAlive            string
@@ -26,6 +28,8 @@ func TestGetConfig(t *testing.T) {
 			name:                 "standerd case",
 			serverURL:            "http://localhost:1883",
 			clientID:             "publisher00001",
+			username:             "user",
+			password:             "pass",
 			topic:                "/example/#",
 			qos:                  "0",
 			keepAlive:            "30",
@@ -38,6 +42,8 @@ func TestGetConfig(t *testing.T) {
 					Scheme: "http",
 					Host:   "localhost:1883"},
 				clientID:             "publisher00001",
+				username:             "user",
+				password:             "pass",
 				topic:                "/example/#",
 				qos:                  byte(0),
 				keepAlive:            30,
@@ -52,6 +58,8 @@ func TestGetConfig(t *testing.T) {
 			name:                 "serverURL must not be blank case",
 			serverURL:            "",
 			clientID:             "publisher00001",
+			username:             "user",
+			password:             "pass",
 			topic:                "/example/#",
 			qos:                  "0",
 			keepAlive:            "30",
@@ -66,6 +74,8 @@ func TestGetConfig(t *testing.T) {
 			name:                 "must be a valid URL case",
 			serverURL:            ":",
 			clientID:             "publisher00001",
+			username:             "user",
+			password:             "pass",
 			topic:                "/example/#",
 			qos:                  "0",
 			keepAlive:            "30",
@@ -80,6 +90,8 @@ func TestGetConfig(t *testing.T) {
 			name:                 "clientID must not be blank case",
 			serverURL:            "http://localhost:1883",
 			clientID:             "",
+			username:             "user",
+			password:             "pass",
 			topic:                "/example/#",
 			qos:                  "0",
 			keepAlive:            "30",
@@ -94,6 +106,8 @@ func TestGetConfig(t *testing.T) {
 			name:                 "topic must not be blank case",
 			serverURL:            "http://localhost:1883",
 			clientID:             "publisher00001",
+			username:             "user",
+			password:             "pass",
 			topic:                "",
 			qos:                  "0",
 			keepAlive:            "30",
@@ -108,6 +122,8 @@ func TestGetConfig(t *testing.T) {
 			name:                 "qos must not be blank case",
 			serverURL:            "http://localhost:1883",
 			clientID:             "publisher00001",
+			username:             "user",
+			password:             "pass",
 			topic:                "/example/#",
 			qos:                  "",
 			keepAlive:            "30",
@@ -122,6 +138,8 @@ func TestGetConfig(t *testing.T) {
 			name:                 "keepAlive must not be blank case",
 			serverURL:            "http://localhost:1883",
 			clientID:             "publisher00001",
+			username:             "user",
+			password:             "pass",
 			topic:                "/example/#",
 			qos:                  "0",
 			keepAlive:            "",
@@ -136,6 +154,8 @@ func TestGetConfig(t *testing.T) {
 			name:                 "connectRetryDelay  must not be blank case",
 			serverURL:            "http://localhost:1883",
 			clientID:             "publisher00001",
+			username:             "user",
+			password:             "pass",
 			topic:                "/example/#",
 			qos:                  "0",
 			keepAlive:            "30",
@@ -150,6 +170,8 @@ func TestGetConfig(t *testing.T) {
 			name:                 "delayBetweenMessages must not be blank case",
 			serverURL:            "http://localhost:1883",
 			clientID:             "publisher00001",
+			username:             "user",
+			password:             "pass",
 			topic:                "/example/#",
 			qos:                  "0",
 			keepAlive:            "30",
@@ -164,6 +186,8 @@ func TestGetConfig(t *testing.T) {
 			name:                 "printMessages must not be blank case",
 			serverURL:            "http://localhost:1883",
 			clientID:             "publisher00001",
+			username:             "user",
+			password:             "pass",
 			topic:                "/example/#",
 			qos:                  "0",
 			keepAlive:            "30",
@@ -178,6 +202,8 @@ func TestGetConfig(t *testing.T) {
 			name:                 "debug must not be blank case",
 			serverURL:            "http://localhost:1883",
 			clientID:             "publisher00001",
+			username:             "user",
+			password:             "pass",
 			topic:                "/example/#",
 			qos:                  "0",
 			keepAlive:            "30",
@@ -194,6 +220,8 @@ func TestGetConfig(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Setenv("acm_serverURL", tt.serverURL)
 			t.Setenv("acm_clientID", tt.clientID)
+			t.Setenv("acm_username", tt.username)
+			t.Setenv("acm_password", tt.password)
 			t.Setenv("acm_topic", tt.topic)
 			t.Setenv("acm_qos", tt.qos)
 			t.Setenv("acm_keepAlive", tt.keepAlive)
