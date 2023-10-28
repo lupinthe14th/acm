@@ -24,6 +24,11 @@ func main() {
 	// Default level for this example is info, unless debug flag is present
 	zerolog.SetGlobalLevel(zerolog.InfoLevel)
 
+	tlsConfig := newTLSConfig()
+	if tlsConfig != nil {
+		log.Info().Msg("TLS enabled")
+	}
+
 	cfg, err := getConfig()
 	if err != nil {
 		log.Fatal().Err(err)
@@ -31,6 +36,7 @@ func main() {
 
 	cliCfg := autopaho.ClientConfig{
 		BrokerUrls:        []*url.URL{cfg.serverURL},
+		TlsCfg:            tlsConfig,
 		KeepAlive:         cfg.keepAlive,
 		ConnectRetryDelay: cfg.connectRetryDelay,
 		OnConnectionUp:    func(*autopaho.ConnectionManager, *paho.Connack) { log.Info().Msg("mqtt connection up") },
@@ -54,6 +60,8 @@ func main() {
 		cliCfg.PahoDebug = logger{prefix: "paho"}
 		zerolog.SetGlobalLevel(zerolog.DebugLevel)
 	}
+
+	cliCfg.SetUsernamePassword(cfg.username, []byte(cfg.password))
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
