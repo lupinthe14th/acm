@@ -4,14 +4,17 @@ go 1.17
 
 require (
 	github.com/eclipse/paho.golang v0.12.0
-	github.com/rs/zerolog v1.26.1
+	github.com/rs/zerolog v1.31.0
 	periph.io/x/devices/v3 v3.6.12
 	periph.io/x/host/v3 v3.7.1
 )
 
 require (
 	github.com/gorilla/websocket v1.5.0 // indirect
+	github.com/mattn/go-colorable v0.1.13 // indirect
+	github.com/mattn/go-isatty v0.0.19 // indirect
 	golang.org/x/net v0.17.0 // indirect
 	golang.org/x/sync v0.4.0 // indirect
+	golang.org/x/sys v0.13.0 // indirect
 	periph.io/x/conn/v3 v3.6.9 // indirect
 )
