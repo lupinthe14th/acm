@@ -95,3 +95,5 @@ periph.io/x/host/v3 v3.7.1 h1:SAe/7IWSOoFsqh2/74+SxbqehzOPny+jAPs25fd/NUI=
 periph.io/x/host/v3 v3.7.1/go.mod h1:kqMB+cJHtIPQCCMqDoiIMwr0pu1p+qQObkrPha3mX6E=
 periph.io/x/host/v3 v3.8.0 h1:T5ojZ2wvnZHGPS4h95N2ZpcCyHnsvH3YRZ1UUUiv5CQ=
 periph.io/x/host/v3 v3.8.0/go.mod h1:rzOLH+2g9bhc6pWZrkCrmytD4igwQ2vxFw6Wn6ZOlLY=
+periph.io/x/host/v3 v3.8.2 h1:ayKUDzgUCN0g8+/xM9GTkWaOBhSLVcVHGTfjAOi8OsQ=
+periph.io/x/host/v3 v3.8.2/go.mod h1:yFL76AesNHR68PboofSWYaQTKmvPXsQH2Apvp/ls/K4=
