@@ -1,11 +1,9 @@
 ---
 # SeeAlso: https://github.com/mvdan/github-actions-golang
-name: CI
+name: CI/Build
 on:
   pull_request:
-    paths:
-      - "**.go"
-  push:
+    types: [opened, synchronize, reopened]
     paths:
       - "**.go"
 
@@ -32,3 +30,30 @@ jobs:
           file: ./coverage.txt
           flags: go
           name: Go ${{matrix.go-version}} / ${{matrix.platform}}
+
+  build:
+    needs: test
+    strategy:
+      matrix:
+        GOOS: ['linux']
+        GOARCH: ['arm']
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: 1.21.x
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: build publisher
+        run: |
+          mkdir -p dist
+          go build -o dist/publisher-"$GOOS"-"$GOARCH" ./publisher/
+        env:
+          GOOS: ${{ matrix.GOOS }}
+          GOARCH: ${{ matrix.GOARCH }}
+        shell: bash
+      - uses: actions/upload-artifact@v2
+        with:
+          name: dist
+          path: dist/publisher-*
