@@ -6,6 +6,7 @@ import (
 	"net/url"
 	"os"
 	"os/signal"
+	"strings"
 	"sync"
 	"syscall"
 	"time"
@@ -78,10 +79,11 @@ func main() {
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		d, err := ds18b20.New()
+		ds, err := ds18b20.New()
 		if err != nil {
 			log.Fatal().Err(err)
 		}
+		log.Debug().Msgf("%v", ds)
 
 		for {
 			// AwaitConnection will return immediately if connection is up; adding this call stops publication whilst
@@ -92,33 +94,35 @@ func main() {
 				return
 			}
 
-			e, err := d.Read()
-			if err != nil {
-				log.Fatal().Err(err)
-			}
-			// The message could be anything; lets make it JSON containing a simple count (make it simpler to track the messages)
-			msg, err := json.Marshal(e)
-			if err != nil {
-				log.Fatal().Err(err)
-			}
-
-			// Publish will block so we run it in a goRoutine
-			wg.Add(1)
-			go func(msg []byte) {
-				defer wg.Done()
-				pr, err := cm.Publish(ctx, &paho.Publish{
-					QoS:     cfg.qos,
-					Topic:   cfg.topic,
-					Payload: msg,
-				})
+			for _, d := range ds.GetDevs() {
+				e, err := d.Read()
 				if err != nil {
-					log.Error().Err(err).Msg("error publishing")
-				} else if pr.ReasonCode != 0 && pr.ReasonCode != 16 { // 16 = Server received message but there are no subscribers
-					log.Info().Msgf("reason code %d received\n", pr.ReasonCode)
-				} else if cfg.printMessage {
-					log.Info().Msgf("sent message: %s\n", msg)
+					log.Fatal().Err(err)
 				}
-			}(msg)
+				// The message could be anything; lets make it JSON containing a simple count (make it simpler to track the messages)
+				msg, err := json.Marshal(e)
+				if err != nil {
+					log.Fatal().Err(err)
+				}
+
+				// Publish will block so we run it in a goRoutine
+				wg.Add(1)
+				go func(msg []byte, d ds18b20.Dev) {
+					defer wg.Done()
+					pr, err := cm.Publish(ctx, &paho.Publish{
+						QoS:     cfg.qos,
+						Topic:   strings.Join([]string{cfg.topic, d.String()}, "/"),
+						Payload: msg,
+					})
+					if err != nil {
+						log.Error().Err(err).Msg("error publishing")
+					} else if pr.ReasonCode != 0 && pr.ReasonCode != 16 { // 16 = Server received message but there are no subscribers
+						log.Info().Msgf("reason code %d received\n", pr.ReasonCode)
+					} else if cfg.printMessage {
+						log.Info().Msgf("sent message: %s\n", msg)
+					}
+				}(msg, d)
+			}
 
 			select {
 			case <-time.After(cfg.delayBetweenMessages):
