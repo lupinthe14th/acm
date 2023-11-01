@@ -25,8 +25,8 @@ func main() {
 	// Default level for this example is info, unless debug flag is present
 	zerolog.SetGlobalLevel(zerolog.InfoLevel)
 
-	tlsConfig := newTLSConfig()
-	if tlsConfig != nil {
+	tlsConfig, err := newTLSConfig("emqxsl-ca.crt")
+	if err != nil {
 		log.Info().Msg("TLS enabled")
 	}
 
