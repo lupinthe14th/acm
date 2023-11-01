@@ -65,7 +65,9 @@ func (d *Dev) Read() (Env, error) {
 	const timeout = 1 * time.Minute
 	deadline := time.Now().Add(timeout)
 	for tries := 0; time.Now().Before(deadline); tries++ {
-		ds18b20.ConvertAll(d.bus, 10)
+		if err := ds18b20.ConvertAll(d.bus, 10); err != nil {
+			return e, fmt.Errorf("device %v failed to convert: %w", d, err)
+		}
 		temp, err := d.dev.LastTemp()
 		if err == nil {
 			e.Temperature = temp.Celsius()
@@ -75,7 +77,7 @@ func (d *Dev) Read() (Env, error) {
 		log.Info().Msgf("device not responding (%s); retrying...", err)
 		time.Sleep(time.Second << uint(tries))
 	}
-	return Env{}, fmt.Errorf("device %v failed to respond after %s", d, timeout)
+	return e, fmt.Errorf("device %v failed to respond after %s", d, timeout)
 }
 
 func (d *Dev) String() string {
