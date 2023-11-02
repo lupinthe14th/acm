@@ -21,3 +21,5 @@ jobs:
         uses: mathieudutour/github-tag-action@v6.1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
+  release:
+    uses: ./.github/workflows/releaser.yml
