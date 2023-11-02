@@ -2,14 +2,9 @@
 name: ai-pr-reviewer
 
 on:
-  pull_request:
-    types: [opened]
-    branches-ignore:
-      - master
-      - main
+  pull_request_target:
+    types: [opened, synchronize, reopened]
   pull_request_review_comment:
-    types: [created]
-  issue_comment:
     types: [created]
 
 permissions:
@@ -17,13 +12,20 @@ permissions:
   pull-requests: write
 
 concurrency:
-  group: ${{ github.repository }}-${{ github.event.number || github.head_ref || github.sha }}-${{ github.workflow }}-${{ github.event_name == 'pull_request_review_comment' && 'pr_comment' || 'pr' }}
+  group: ${{ github.repository }}-${{ github.event.number || github.head_ref ||
+    github.sha }}-${{ github.workflow }}-${{ github.event_name ==
+    'pull_request_review_comment' && 'pr_comment' || 'pr' }}
   cancel-in-progress: ${{ github.event_name != 'pull_request_review_comment' }}
 
 jobs:
   review:
     runs-on: ubuntu-latest
-    if: (github.event_name == 'issue_comment' && contains(github.event.comment.body, '[run review]') && github.event.issue.pull_request) || (github.event_name == 'pull_request_review_comment' && contains(github.event.comment.body, '[run review]')) || (github.event_name == 'pull_request' && !contains(github.event.pull_request.title, 'release') && !contains(github.event.pull_request.title, 'Release'))
+    if:
+      (github.event_name == 'issue_comment' && contains(github.event.comment.body, '[run review]') &&
+      github.event.issue.pull_request) || (github.event_name == 'pull_request_review_comment' &&
+      contains(github.event.comment.body, '[run review]')) || (github.event_name == 'pull_request' &&
+      !contains(github.event.pull_request.title, 'release') && !contains(github.event.pull_request.title,
+      'Release'))
     timeout-minutes: 15
     steps:
       - uses: coderabbitai/openai-pr-reviewer@latest
