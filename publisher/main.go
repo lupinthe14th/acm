@@ -27,8 +27,9 @@ func main() {
 
 	tlsConfig, err := newTLSConfig("emqxsl-ca.crt")
 	if err != nil {
-		log.Info().Msg("TLS enabled")
+		log.Error().Msgf("error creating TLS config: %s\n", err)
 	}
+	log.Info().Msgf("TLS config: %v\n", tlsConfig)
 
 	cfg, err := getConfig()
 	if err != nil {
@@ -132,15 +133,13 @@ func main() {
 					log.Info().Msg("publisher done")
 					return
 				}
-				wg.Wait()
 			}
 		}
 	}()
 
 	// Wait for a signal before exiting
 	sig := make(chan os.Signal, 1)
-	signal.Notify(sig, os.Interrupt)
-	signal.Notify(sig, syscall.SIGTERM)
+	signal.Notify(sig, os.Interrupt, syscall.SIGTERM)
 
 	<-sig
 	log.Info().Msg("signal caught - exiting")
