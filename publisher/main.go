@@ -132,8 +132,8 @@ func main() {
 					log.Info().Msg("publisher done")
 					return
 				}
+				wg.Wait()
 			}
-			wg.Wait()
 		}
 	}()
 
