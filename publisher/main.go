@@ -28,12 +28,14 @@ func main() {
 	tlsConfig, err := newTLSConfig("emqxsl-ca.crt")
 	if err != nil {
 		log.Error().Msgf("error creating TLS config: %s\n", err)
+		return
 	}
 	log.Info().Msgf("TLS config: %v\n", tlsConfig)
 
 	cfg, err := getConfig()
 	if err != nil {
-		log.Fatal().Err(err)
+		log.Error().Msgf("error getting config: %s\n", err)
+		return
 	}
 
 	cliCfg := autopaho.ClientConfig{
@@ -98,13 +100,13 @@ func main() {
 			for _, d := range ds.GetDevs() {
 				e, err := d.Read()
 				if err != nil {
-					log.Error().Err(err).Msg("error reading from device")
+					log.Error().Msgf("error reading from device: %s\n", err)
 					continue
 				}
 				// The message could be anything; lets make it JSON containing a simple count (make it simpler to track the messages)
 				msg, err := json.Marshal(e)
 				if err != nil {
-					log.Error().Err(err).Msg("error marshaling JSON")
+					log.Error().Msgf("error marshaling JSON: %s\n", err)
 					continue
 				}
 
