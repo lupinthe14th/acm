@@ -25,7 +25,7 @@ func main() {
 	// Default level for this example is info, unless debug flag is present
 	zerolog.SetGlobalLevel(zerolog.InfoLevel)
 
-	tlsConfig, err := newTLSConfig("./emqxsl-ca.crt")
+	tlsConfig, err := newTLSConfig("/home/alarm/acm/bin/emqxsl-ca.crt")
 	if err != nil {
 		log.Error().Msgf("error creating TLS config: %s\n", err)
 		return
