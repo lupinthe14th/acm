@@ -127,14 +127,14 @@ func main() {
 						log.Info().Msgf("sent message: %s", msg)
 					}
 				}(msg, d)
+			}
 
-				select {
-				case <-time.After(cfg.delayBetweenMessages):
-					log.Info().Msg("delay between messages")
-				case <-ctx.Done():
-					log.Info().Msg("publisher done")
-					return
-				}
+			select {
+			case <-time.After(cfg.delayBetweenMessages):
+				log.Info().Msg("delay between messages")
+			case <-ctx.Done():
+				log.Info().Msg("publisher done")
+				return
 			}
 		}
 	}()
