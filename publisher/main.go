@@ -44,11 +44,11 @@ func main() {
 		KeepAlive:         cfg.keepAlive,
 		ConnectRetryDelay: cfg.connectRetryDelay,
 		OnConnectionUp:    func(*autopaho.ConnectionManager, *paho.Connack) { log.Info().Msg("mqtt connection up") },
-		OnConnectError:    func(err error) { log.Error().Err(err).Msgf("error whilst attempting connection: %s", err) },
+		OnConnectError:    func(err error) { log.Error().Msgf("error whilst attempting connection: %s", err) },
 		Debug:             paho.NOOPLogger{},
 		ClientConfig: paho.ClientConfig{
 			ClientID:      cfg.clientID,
-			OnClientError: func(err error) { log.Printf("server requested disconnect: %s", err) },
+			OnClientError: func(err error) { log.Error().Msgf("server requested disconnect: %s", err) },
 			OnServerDisconnect: func(d *paho.Disconnect) {
 				if d.Properties != nil {
 					log.Info().Msgf("server requested disconnect: %s", d.Properties.ReasonString)
