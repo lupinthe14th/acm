@@ -103,7 +103,7 @@ func main() {
 				// The message could be anything; lets make it JSON containing a simple count (make it simpler to track the messages)
 				msg, err := json.Marshal(e)
 				if err != nil {
-					log.Error().Err(err).Msg("error marshalling JSON")
+					log.Error().Err(err).Msg("error marshaling JSON")
 					continue
 				}
 
@@ -132,8 +132,8 @@ func main() {
 					log.Info().Msg("publisher done")
 					return
 				}
-				wg.Wait()
 			}
+			wg.Wait()
 		}
 	}()
 
