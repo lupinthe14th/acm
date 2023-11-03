@@ -97,12 +97,14 @@ func main() {
 			for _, d := range ds.GetDevs() {
 				e, err := d.Read()
 				if err != nil {
-					log.Fatal().Err(err)
+					log.Error().Err(err).Msg("error reading from device")
+					continue
 				}
 				// The message could be anything; lets make it JSON containing a simple count (make it simpler to track the messages)
 				msg, err := json.Marshal(e)
 				if err != nil {
-					log.Fatal().Err(err)
+					log.Error().Err(err).Msg("error marshaling JSON")
+					continue
 				}
 
 				// Publish will block so we run it in a goRoutine
@@ -122,15 +124,16 @@ func main() {
 						log.Info().Msgf("sent message: %s\n", msg)
 					}
 				}(msg, d)
-			}
 
-			select {
-			case <-time.After(cfg.delayBetweenMessages):
-				log.Info().Msg("delay between messages")
-			case <-ctx.Done():
-				log.Info().Msg("publisher done")
-				return
+				select {
+				case <-time.After(cfg.delayBetweenMessages):
+					log.Info().Msg("delay between messages")
+				case <-ctx.Done():
+					log.Info().Msg("publisher done")
+					return
+				}
 			}
+			wg.Wait()
 		}
 	}()
 
