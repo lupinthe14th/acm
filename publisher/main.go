@@ -25,16 +25,16 @@ func main() {
 	// Default level for this example is info, unless debug flag is present
 	zerolog.SetGlobalLevel(zerolog.InfoLevel)
 
-	tlsConfig, err := newTLSConfig("emqxsl-ca.crt")
+	tlsConfig, err := newTLSConfig("/home/alarm/acm/bin/emqxsl-ca.crt")
 	if err != nil {
-		log.Error().Msgf("error creating TLS config: %s\n", err)
+		log.Error().Msgf("error creating TLS config: %s", err)
 		return
 	}
-	log.Info().Msgf("TLS config: %v\n", tlsConfig)
+	log.Debug().Msgf("TLS config: %v", tlsConfig)
 
 	cfg, err := getConfig()
 	if err != nil {
-		log.Error().Msgf("error getting config: %s\n", err)
+		log.Error().Msgf("error getting config: %s", err)
 		return
 	}
 
@@ -44,16 +44,16 @@ func main() {
 		KeepAlive:         cfg.keepAlive,
 		ConnectRetryDelay: cfg.connectRetryDelay,
 		OnConnectionUp:    func(*autopaho.ConnectionManager, *paho.Connack) { log.Info().Msg("mqtt connection up") },
-		OnConnectError:    func(err error) { log.Error().Err(err).Msgf("error whilst attempting connection: %s\n", err) },
+		OnConnectError:    func(err error) { log.Error().Msgf("error whilst attempting connection: %s", err) },
 		Debug:             paho.NOOPLogger{},
 		ClientConfig: paho.ClientConfig{
 			ClientID:      cfg.clientID,
-			OnClientError: func(err error) { log.Printf("server requested disconnect: %s\n", err) },
+			OnClientError: func(err error) { log.Error().Msgf("server requested disconnect: %s", err) },
 			OnServerDisconnect: func(d *paho.Disconnect) {
 				if d.Properties != nil {
-					log.Info().Msgf("server requested disconnect: %s\n", d.Properties.ReasonString)
+					log.Info().Msgf("server requested disconnect: %s", d.Properties.ReasonString)
 				} else {
-					log.Info().Msgf("server requested disconnect: %d\n", d.ReasonCode)
+					log.Info().Msgf("server requested disconnect: %d", d.ReasonCode)
 				}
 			},
 		},
@@ -93,20 +93,20 @@ func main() {
 			// connection is unavailable.
 			err = cm.AwaitConnection(ctx)
 			if err != nil { // Should only happen when context is canceled
-				log.Info().Msgf("publisher done (AwaitConnection: %s)\n", err)
+				log.Info().Msgf("publisher done (AwaitConnection: %s)", err)
 				return
 			}
 
 			for _, d := range ds.GetDevs() {
 				e, err := d.Read()
 				if err != nil {
-					log.Error().Msgf("error reading from device: %s\n", err)
+					log.Error().Msgf("error reading from device: %s", err)
 					continue
 				}
 				// The message could be anything; lets make it JSON containing a simple count (make it simpler to track the messages)
 				msg, err := json.Marshal(e)
 				if err != nil {
-					log.Error().Msgf("error marshaling JSON: %s\n", err)
+					log.Error().Msgf("error marshaling JSON: %s", err)
 					continue
 				}
 
@@ -122,9 +122,9 @@ func main() {
 					if err != nil {
 						log.Error().Err(err).Msg("error publishing")
 					} else if pr.ReasonCode != 0 && pr.ReasonCode != 16 { // 16 = Server received message but there are no subscribers
-						log.Info().Msgf("reason code %d received\n", pr.ReasonCode)
+						log.Info().Msgf("reason code %d received", pr.ReasonCode)
 					} else if cfg.printMessage {
-						log.Info().Msgf("sent message: %s\n", msg)
+						log.Info().Msgf("sent message: %s", msg)
 					}
 				}(msg, d)
 
