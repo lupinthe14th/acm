@@ -300,7 +300,7 @@ func TestStringFromEnv(t *testing.T) {
 			wantValue: "SMALLPOX",
 		},
 		{
-			name:      "value must not be blank",
+			name:      "value must be blank",
 			key:       "smallpox",
 			value:     "",
 			wantValue: "",
