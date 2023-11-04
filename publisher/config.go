@@ -14,6 +14,7 @@ import (
 // Configuration will be pulled from the environment using the following keys
 const (
 	envServerURL = "acm_serverURL" // server URL
+	envCAFile    = "acm_caFile"    // CA file to use when connecting to server
 	envClientID  = "acm_clientID"  // client id to connect with
 	envUsername  = "acm_username"  // username to connect with
 	envPassword  = "acm_password"  // password to connect with
@@ -31,6 +32,7 @@ const (
 // config holds the configuration
 type config struct {
 	serverURL *url.URL // MQTT server URL
+	caFile    string   // CA file to use when connecting to server
 	clientID  string   // Client ID to use when connecting to server
 	username  string   // Username to use when connecting to server
 	password  string   // Password to use when connecting to server
@@ -58,6 +60,9 @@ func getConfig() (config, error) {
 		return config{}, fmt.Errorf("environmental variable %s must be a valid URL (%w)", envServerURL, err)
 	}
 
+	if cfg.caFile, err = stringFromEnv(envCAFile); err != nil {
+		return config{}, err
+	}
 	if cfg.clientID, err = stringFromEnv(envClientID); err != nil {
 		return config{}, err
 	}

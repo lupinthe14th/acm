@@ -25,18 +25,17 @@ func main() {
 	// Default level for this example is info, unless debug flag is present
 	zerolog.SetGlobalLevel(zerolog.InfoLevel)
 
-	tlsConfig, err := newTLSConfig("/home/alarm/acm/bin/emqxsl-ca.crt")
-	if err != nil {
-		log.Error().Msgf("error creating TLS config: %s", err)
-		return
-	}
-	log.Debug().Msgf("TLS config: %v", tlsConfig)
-
 	cfg, err := getConfig()
 	if err != nil {
 		log.Error().Msgf("error getting config: %s", err)
 		return
 	}
+
+	tlsConfig, err := newTLSConfig(cfg.caFile)
+	if err != nil {
+		log.Info().Msgf("TLS config: %s", err)
+	}
+	log.Debug().Msgf("TLS config: %v", tlsConfig)
 
 	cliCfg := autopaho.ClientConfig{
 		BrokerUrls:        []*url.URL{cfg.serverURL},

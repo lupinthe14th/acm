@@ -11,6 +11,7 @@ func TestGetConfig(t *testing.T) {
 	tests := []struct {
 		name                 string
 		serverURL            string
+		caFile               string
 		clientID             string
 		username             string
 		password             string
@@ -27,6 +28,7 @@ func TestGetConfig(t *testing.T) {
 		{
 			name:                 "standerd case",
 			serverURL:            "http://localhost:1883",
+			caFile:               "ca.pem",
 			clientID:             "publisher00001",
 			username:             "user",
 			password:             "pass",
@@ -41,6 +43,7 @@ func TestGetConfig(t *testing.T) {
 				serverURL: &url.URL{
 					Scheme: "http",
 					Host:   "localhost:1883"},
+				caFile:               "ca.pem",
 				clientID:             "publisher00001",
 				username:             "user",
 				password:             "pass",
@@ -57,6 +60,7 @@ func TestGetConfig(t *testing.T) {
 		{
 			name:                 "serverURL must not be blank case",
 			serverURL:            "",
+			caFile:               "ca.pem",
 			clientID:             "publisher00001",
 			username:             "user",
 			password:             "pass",
@@ -73,6 +77,24 @@ func TestGetConfig(t *testing.T) {
 		{
 			name:                 "must be a valid URL case",
 			serverURL:            ":",
+			caFile:               "ca.pem",
+			clientID:             "publisher00001",
+			username:             "user",
+			password:             "pass",
+			topic:                "/example/#",
+			qos:                  "0",
+			keepAlive:            "30",
+			connectRetryDelay:    "30",
+			delayBetweenMessages: "15",
+			printMessages:        "true",
+			debug:                "false",
+			wantConfig:           config{},
+			isErr:                true,
+		},
+		{
+			name:                 "caFile must not be blank case",
+			serverURL:            "http://localhost:1883",
+			caFile:               "",
 			clientID:             "publisher00001",
 			username:             "user",
 			password:             "pass",
@@ -89,6 +111,7 @@ func TestGetConfig(t *testing.T) {
 		{
 			name:                 "clientID must not be blank case",
 			serverURL:            "http://localhost:1883",
+			caFile:               "ca.pem",
 			clientID:             "",
 			username:             "user",
 			password:             "pass",
@@ -105,6 +128,7 @@ func TestGetConfig(t *testing.T) {
 		{
 			name:                 "topic must not be blank case",
 			serverURL:            "http://localhost:1883",
+			caFile:               "ca.pem",
 			clientID:             "publisher00001",
 			username:             "user",
 			password:             "pass",
@@ -121,6 +145,7 @@ func TestGetConfig(t *testing.T) {
 		{
 			name:                 "qos must not be blank case",
 			serverURL:            "http://localhost:1883",
+			caFile:               "ca.pem",
 			clientID:             "publisher00001",
 			username:             "user",
 			password:             "pass",
@@ -137,6 +162,7 @@ func TestGetConfig(t *testing.T) {
 		{
 			name:                 "keepAlive must not be blank case",
 			serverURL:            "http://localhost:1883",
+			caFile:               "ca.pem",
 			clientID:             "publisher00001",
 			username:             "user",
 			password:             "pass",
@@ -153,6 +179,7 @@ func TestGetConfig(t *testing.T) {
 		{
 			name:                 "connectRetryDelay  must not be blank case",
 			serverURL:            "http://localhost:1883",
+			caFile:               "ca.pem",
 			clientID:             "publisher00001",
 			username:             "user",
 			password:             "pass",
@@ -169,6 +196,7 @@ func TestGetConfig(t *testing.T) {
 		{
 			name:                 "delayBetweenMessages must not be blank case",
 			serverURL:            "http://localhost:1883",
+			caFile:               "ca.pem",
 			clientID:             "publisher00001",
 			username:             "user",
 			password:             "pass",
@@ -185,6 +213,7 @@ func TestGetConfig(t *testing.T) {
 		{
 			name:                 "printMessages must not be blank case",
 			serverURL:            "http://localhost:1883",
+			caFile:               "ca.pem",
 			clientID:             "publisher00001",
 			username:             "user",
 			password:             "pass",
@@ -201,6 +230,7 @@ func TestGetConfig(t *testing.T) {
 		{
 			name:                 "debug must not be blank case",
 			serverURL:            "http://localhost:1883",
+			caFile:               "ca.pem",
 			clientID:             "publisher00001",
 			username:             "user",
 			password:             "pass",
@@ -219,6 +249,7 @@ func TestGetConfig(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Setenv("acm_serverURL", tt.serverURL)
+			t.Setenv("acm_caFile", tt.caFile)
 			t.Setenv("acm_clientID", tt.clientID)
 			t.Setenv("acm_username", tt.username)
 			t.Setenv("acm_password", tt.password)
