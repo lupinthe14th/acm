@@ -105,8 +105,23 @@ func TestGetConfig(t *testing.T) {
 			delayBetweenMessages: "15",
 			printMessages:        "true",
 			debug:                "false",
-			wantConfig:           config{},
-			isErr:                true,
+			wantConfig: config{
+				serverURL: &url.URL{
+					Scheme: "http",
+					Host:   "localhost:1883"},
+				caFile:               "",
+				clientID:             "publisher00001",
+				username:             "user",
+				password:             "pass",
+				topic:                "/example/#",
+				qos:                  byte(0),
+				keepAlive:            30,
+				connectRetryDelay:    time.Duration(30) * time.Millisecond,
+				delayBetweenMessages: time.Duration(15) * time.Millisecond,
+				printMessage:         true,
+				debug:                false,
+			},
+			isErr: false,
 		},
 		{
 			name:                 "clientID must not be blank case",
@@ -277,6 +292,38 @@ func TestStringFromEnv(t *testing.T) {
 		key       string
 		value     string
 		wantValue string
+	}{
+		{
+			name:      "get value",
+			key:       "smallpox",
+			value:     "SMALLPOX",
+			wantValue: "SMALLPOX",
+		},
+		{
+			name:      "value must not be blank",
+			key:       "smallpox",
+			value:     "",
+			wantValue: "",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Setenv(tt.key, tt.value)
+			got := stringFromEnv(tt.key)
+			if got != tt.wantValue {
+				t.Fatalf("unexpected value: got: %s, want: %s", got, tt.wantValue)
+			}
+		})
+	}
+}
+
+func TestRequiredStringFromEnv(t *testing.T) {
+	tests := []struct {
+		name      string
+		key       string
+		value     string
+		wantValue string
 		isErr     bool
 	}{
 		{
@@ -298,7 +345,7 @@ func TestStringFromEnv(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Setenv(tt.key, tt.value)
-			got, err := stringFromEnv(tt.key)
+			got, err := requiredStringFromEnv(tt.key)
 			if got != tt.wantValue {
 				t.Fatalf("unexpected value: got: %s, want: %s", got, tt.wantValue)
 			}
