@@ -14,6 +14,7 @@ import (
 // Configuration will be pulled from the environment using the following keys
 const (
 	envServerURL = "acm_serverURL" // server URL
+	envCAFile    = "acm_caFile"    // CA file to use when connecting to server
 	envClientID  = "acm_clientID"  // client id to connect with
 	envUsername  = "acm_username"  // username to connect with
 	envPassword  = "acm_password"  // password to connect with
@@ -31,6 +32,7 @@ const (
 // config holds the configuration
 type config struct {
 	serverURL *url.URL // MQTT server URL
+	caFile    string   // CA file to use when connecting to server
 	clientID  string   // Client ID to use when connecting to server
 	username  string   // Username to use when connecting to server
 	password  string   // Password to use when connecting to server
@@ -49,7 +51,7 @@ func getConfig() (config, error) {
 	var cfg config
 	var err error
 
-	srvURL, err := stringFromEnv(envServerURL)
+	srvURL, err := requiredStringFromEnv(envServerURL)
 	if err != nil {
 		return config{}, err
 	}
@@ -58,16 +60,18 @@ func getConfig() (config, error) {
 		return config{}, fmt.Errorf("environmental variable %s must be a valid URL (%w)", envServerURL, err)
 	}
 
-	if cfg.clientID, err = stringFromEnv(envClientID); err != nil {
+	cfg.caFile = stringFromEnv(envCAFile)
+
+	if cfg.clientID, err = requiredStringFromEnv(envClientID); err != nil {
 		return config{}, err
 	}
-	if cfg.username, err = stringFromEnv(envUsername); err != nil {
+	if cfg.username, err = requiredStringFromEnv(envUsername); err != nil {
 		return config{}, err
 	}
-	if cfg.password, err = stringFromEnv(envPassword); err != nil {
+	if cfg.password, err = requiredStringFromEnv(envPassword); err != nil {
 		return config{}, err
 	}
-	if cfg.topic, err = stringFromEnv(envTopic); err != nil {
+	if cfg.topic, err = requiredStringFromEnv(envTopic); err != nil {
 		return config{}, err
 	}
 
@@ -102,8 +106,13 @@ func getConfig() (config, error) {
 	return cfg, nil
 }
 
-// stringFromEnv - Retrieves a string from the environment and ensures it is not blank (ort non-existent)
-func stringFromEnv(key string) (string, error) {
+// stringFromEnv gets a string from the environment or returns an empty string if not set.
+func stringFromEnv(key string) string {
+	return strings.TrimSpace(os.Getenv(key))
+}
+
+// requiredStringFromEnv - Retrieves a string from the environment and ensures it is not blank (ort non-existent)
+func requiredStringFromEnv(key string) (string, error) {
 	s := os.Getenv(key)
 	if len(s) == 0 {
 		return "", fmt.Errorf("environmental variable %s must not be blank", key)
