@@ -28,7 +28,7 @@ func main() {
 	cfg, err := getConfig()
 	if err != nil {
 		log.Error().Msgf("error getting config: %s", err)
-		return
+		os.Exit(1)
 	}
 
 	tlsConfig, err := newTLSConfig(cfg.caFile)

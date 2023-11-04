@@ -92,7 +92,7 @@ func TestGetConfig(t *testing.T) {
 			isErr:                true,
 		},
 		{
-			name:                 "caFile must not be blank case",
+			name:                 "caFile must be a blank case",
 			serverURL:            "http://localhost:1883",
 			caFile:               "",
 			clientID:             "publisher00001",
